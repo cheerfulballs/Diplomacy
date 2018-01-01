@@ -30,9 +30,7 @@ class Map(object):
         print 'SOUTH_to_NORTH:', M.SOUTH_to_NORTH
         print ''' '''
         
-
-        
-        
+               
 class Nordics(object):
     
     def __init__(self, Map):
@@ -47,7 +45,6 @@ class Teruns(object):
         Map.SOUTH['nation'] = 'teruns'
         
       
-
 class Actions(object):
      
      def __init__(self):
@@ -74,6 +71,7 @@ class Actions(object):
      def orders_display(self, Map):
         pass
         
+
 
 #Begin
 print ''' '''
