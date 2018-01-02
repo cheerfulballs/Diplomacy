@@ -5,14 +5,13 @@ Created on Tue Jan 02 15:53:23 2018
 @author: Mas
 """
 # Diplomacy
-
 class Map(object):
     
     def __init__(self):
-        # vertices
+        # Vertices
         self.NORTH = {'region' : 'NORTH', 'troop' : 'N/A', 'nation' : 'N/A'}
         self.SOUTH = {'region' : 'SOUTH', 'troop' : 'N/A', 'nation' : 'N/A'}
-        # edges
+        # Edges
         self.NORTH_to_SOUTH = {'from' : 'NORTH', 'to' : 'SOUTH',  'troop' : 'N/A', 'action' : 'N/A', 'nation' : 'N/A'}
         self.SOUTH_to_NORTH = {'from' : 'SOUTH', 'to' : 'NORTH',  'troop' : 'N/A', 'action' : 'N/A', 'nation' : 'N/A'}
         # Limbos
@@ -39,11 +38,11 @@ class Map(object):
         print ''' '''
         print 'Limbos display (non-empty):'
         if M.L_NORTH['troop'] != 'N/A':
-            print 'NORTH_to_SOUTH:', M.L_NORTH 
+            print 'L_NORTH:', M.L_NORTH 
         else:
             pass
         if M.L_SOUTH['troop'] != 'N/A':
-            print 'NORTH_to_SOUTH:', M.L_SOUTH         
+            print 'L_SOUTH:', M.L_SOUTH         
         else:
             pass
         print ''' '''        
@@ -93,8 +92,6 @@ class Actions(object):
         else:
             print 'Bad call'
         
-     def orders_display(self, Map):
-        pass
         
 
 
@@ -137,14 +134,14 @@ else:
 fight = defense -attack
 # for support in supports.....
 if fight >= 0:
-    print 'Region', M.NORTH['region'],'succesfully defended by', M.NORTH['nation'],' with troop', M.NORTH['troop'],'.'  
+    print 'Region', M.NORTH['region'],'succesfully defended by', M.NORTH['nation'],'with troop', M.NORTH['troop'],'.'  
     M.L_SOUTH['nation'] = M.SOUTH_to_NORTH['nation']
     M.L_SOUTH['troop'] = M.SOUTH_to_NORTH['troop']
     M.SOUTH_to_NORTH['nation'] = 'N/A'
     M.SOUTH_to_NORTH['troop'] = 'N/A'
     
 else:
-    print 'Region', M.NORTH['region'],'conquered by', M.SOUTH_to_NORTH['nation'],' with troop', M.SOUTH_to_NORTH['troop'],'.'  
+    print 'Region', M.NORTH['region'],'conquered by', M.SOUTH_to_NORTH['nation'],'with troop', M.SOUTH_to_NORTH['troop'],'.'  
     M.L_NORTH['nation'] = M.NORTH['nation']
     M.L_NORTH['troop'] = M.NORTH['troop']    
     M.NORTH['nation'] = M.SOUTH_to_NORTH['nation']
@@ -153,6 +150,35 @@ else:
     M.SOUTH_to_NORTH['troop'] = 'N/A'
 
 # Fight in the SOUTH
-   
+defense = 0
+if M.SOUTH['nation'] != 'N/A':
+    defense += 1
+else:
+    pass
+# for support in supports.....
+attack = 0
+if M.NORTH_to_SOUTH['nation'] != 'N/A':
+    attack += 1
+else:
+    pass
+fight = defense -attack  
+# for support in supports.....
+if fight >= 0:
+    print 'Region', M.SOUTH['region'],'succesfully defended by', M.SOUTH['nation'],' with troop', M.SOUTH['troop'],'.'  
+    M.L_NORTH['nation'] = M.NORTH_to_SOUTH['nation']
+    M.L_NORTH['troop'] = M.NORTH_to_SOUTH['troop']
+    M.NORTH_to_SOUTH['nation'] = 'N/A'
+    M.NORTH_to_SOUTH['troop'] = 'N/A'
+    
+else:
+    print 'Region', M.SOUTH['region'],'conquered by', M.NORTH_to_SOUTH['nation'],' with troop', M.NORTH_to_SOUTH['troop'],'.'  
+    M.L_SOUTH['nation'] = M.SOUTH['nation']
+    M.L_SOUTH['troop'] = M.SOUTH['troop']    
+    M.SOUTH['nation'] = M.NORTH_to_SOUTH['nation']
+    M.SOUTH['troop'] = M.NORTH_to_SOUTH['troop']
+    M.NORTH_to_SOUTH['nation'] = 'N/A'
+    M.NORTH_to_SOUTH['troop'] = 'N/A'
 
 M.show_map(M)
+
+
