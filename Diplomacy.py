@@ -1,47 +1,67 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jan 01 18:24:47 2018
+Created on Tue Jan 02 15:53:23 2018
 
 @author: Mas
 """
-
 # Diplomacy
 
 class Map(object):
     
     def __init__(self):
         # vertices
-        self.NORTH = {'region' : 'NORTH', 'troop type' : 0, 'nation' : 'N/A'}
-        self.SOUTH = {'region' : 'SOUTH', 'troop type' : 0, 'nation' : 'N/A'}
+        self.NORTH = {'region' : 'NORTH', 'troop' : 'N/A', 'nation' : 'N/A'}
+        self.SOUTH = {'region' : 'SOUTH', 'troop' : 'N/A', 'nation' : 'N/A'}
         # edges
-        self.NORTH_to_SOUTH = []
-        self.SOUTH_to_NORTH = []
+        self.NORTH_to_SOUTH = {'from' : 'NORTH', 'to' : 'SOUTH',  'troop' : 'N/A', 'action' : 'N/A', 'nation' : 'N/A'}
+        self.SOUTH_to_NORTH = {'from' : 'SOUTH', 'to' : 'NORTH',  'troop' : 'N/A', 'action' : 'N/A', 'nation' : 'N/A'}
+        # Limbos
+        self.L_NORTH = {'region' : 'NORTH', 'troop' : 'N/A', 'nation' : 'N/A'}
+        self.L_SOUTH = {'region' : 'SOUTH', 'troop' : 'N/A', 'nation' : 'N/A'}
         
     def show_map(self, M):
         print ''' '''
         print 'Map display:'
+        print ''' '''
+        print 'Regions display:'
         print M.NORTH 
         print M.SOUTH
         print ''' '''
-        
-    def show_move(self, M):
-        print 'Move display:'
-        print 'NORTH_to_SOUTH:', M.NORTH_to_SOUTH 
-        print 'SOUTH_to_NORTH:', M.SOUTH_to_NORTH
+        print 'Edges display (non-empty):'
+        if M.NORTH_to_SOUTH['troop'] != 'N/A':
+            print 'NORTH_to_SOUTH:', M.NORTH_to_SOUTH 
+        else:
+            pass
+        if M.SOUTH_to_NORTH['troop'] != 'N/A':
+            print 'NORTH_to_SOUTH:', M.SOUTH_to_NORTH         
+        else:
+            pass
         print ''' '''
+        print 'Limbos display (non-empty):'
+        if M.L_NORTH['troop'] != 'N/A':
+            print 'NORTH_to_SOUTH:', M.L_NORTH 
+        else:
+            pass
+        if M.L_SOUTH['troop'] != 'N/A':
+            print 'NORTH_to_SOUTH:', M.L_SOUTH         
+        else:
+            pass
+        print ''' '''        
+    
+
         
                
 class Nordics(object):
     
     def __init__(self, Map):
-        Map.NORTH['troop type'] = 'A'
+        Map.NORTH['troop'] = 'A'
         Map.NORTH['nation'] = 'nordics'
         
                 
 class Teruns(object):
     
     def __init__(self, Map):
-        Map.SOUTH['troop type'] = 'A'
+        Map.SOUTH['troop'] = 'A'
         Map.SOUTH['nation'] = 'teruns'
         
       
@@ -51,7 +71,7 @@ class Actions(object):
          self.orders_display = []
      
      def hold(self, region, troop_type, current_player):
-        if  region['troop type'] == troop_type and region['nation'] == current_player:
+        if  region['troop'] == troop_type and region['nation'] == current_player:
             order = {'troop' : 'A', 'region' : region['region'], 'action' : 'hold'}
             orders_display.append(order)
             print 'Order from ', current_player, ':', order
@@ -60,9 +80,14 @@ class Actions(object):
             print 'Bad call'
             
      def move(self, M_move_from, M_move_to, troop_type, current_player):
-        if  M_move_from['troop type'] == troop_type and M_move_from['nation'] == current_player:
-            order = {'troop' : 'A', 'from' : M_move_from['region'], 'to' : M_move_to['region'], 'action' : 'move'}
+        if  M_move_from['troop'] == troop_type and M_move_from['nation'] == current_player: #add valid edge check
+            order = {'troop' : 'A', 'from' : M_move_from['region'], 'to' : M_move_to['region'], 'action' : 'move', 'nation' : current_player}
             orders_display.append(order)
+            M.SOUTH['troop'] = 'N/A'
+            M.SOUTH['nation'] = 'N/A'
+            M.SOUTH_to_NORTH['troop'] = order['troop'] 
+            M.SOUTH_to_NORTH['action'] = order['action']
+            M.SOUTH_to_NORTH['nation'] = order['nation']
             print 'Order from ', current_player, ':', order
             print ''' '''
         else:
@@ -94,3 +119,40 @@ troop_type = 'A'
 M_move_from = M.SOUTH
 M_move_to = M.NORTH
 T_O = Actions().move(M_move_from, M_move_to, troop_type, current_player)
+
+
+
+# fight in the NORTH
+defense = 0
+if M.NORTH['nation'] != 'N/A':
+    defense += 1
+else:
+    pass
+# for support in supports.....
+attack = 0
+if M.SOUTH_to_NORTH['nation'] != 'N/A':
+    attack += 1
+else:
+    pass
+fight = defense -attack
+# for support in supports.....
+if fight >= 0:
+    print 'Region', M.NORTH['region'],'succesfully defended by', M.NORTH['nation'],' with troop', M.NORTH['troop'],'.'  
+    M.L_SOUTH['nation'] = M.SOUTH_to_NORTH['nation']
+    M.L_SOUTH['troop'] = M.SOUTH_to_NORTH['troop']
+    M.SOUTH_to_NORTH['nation'] = 'N/A'
+    M.SOUTH_to_NORTH['troop'] = 'N/A'
+    
+else:
+    print 'Region', M.NORTH['region'],'conquered by', M.SOUTH_to_NORTH['nation'],' with troop', M.SOUTH_to_NORTH['troop'],'.'  
+    M.L_NORTH['nation'] = M.NORTH['nation']
+    M.L_NORTH['troop'] = M.NORTH['troop']    
+    M.NORTH['nation'] = M.SOUTH_to_NORTH['nation']
+    M.NORTH['troop'] = M.SOUTH_to_NORTH['troop']
+    M.SOUTH_to_NORTH['nation'] = 'N/A'
+    M.SOUTH_to_NORTH['troop'] = 'N/A'
+
+# Fight in the SOUTH
+   
+
+M.show_map(M)
